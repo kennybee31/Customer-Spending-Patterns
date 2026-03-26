@@ -1,11 +1,11 @@
-# --- 強制補血：解決 munsell 缺失問題 ---
+# --- 強制補血：解決依賴斷路問題 ---
 library(shiny)
 library(bslib)
-library(ggplot2)  # 代替整個 tidyverse，減少雜音
-library(dplyr)    # 只要用到的就好
+library(ggplot2)  # 代替一整座 tidyverse，減少傳輸雜音
+library(dplyr)    # 只要用到的工具就好
 library(plotly)
 library(DT)
-library(munsell)  # <--- 關鍵！手動加入這行，強制 ShinyLive 捕捉它
+library(munsell)  # <--- 關鍵！手動加入這行，強制要求環境補上這塊拼圖
 
 # --- 1. 全球戰略辭典 (治理、邏輯與警語) ---
 lang_data <- list(
