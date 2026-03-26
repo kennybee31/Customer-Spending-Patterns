@@ -1,11 +1,42 @@
-# --- 強制補血：解決依賴斷路問題 ---
+# --- 1. 建立視覺與邏輯依賴 ---
 library(shiny)
 library(bslib)
-library(ggplot2)  # 代替一整座 tidyverse，減少傳輸雜音
-library(dplyr)    # 只要用到的工具就好
+library(dplyr)
 library(plotly)
 library(DT)
-library(munsell)  # <--- 關鍵！手動加入這行，強制要求環境補上這塊拼圖
+library(munsell) # 確保色彩座標穩健
+
+# --- 2. 數據讀取與名稱對位 (核心修復) ---
+# 為大於其細：從微小的相對路徑讀取，確保透明度
+data_file <- "shopping_behavior_updated.csv"
+
+if (file.exists(data_file)) {
+  # 讀取數據並立即賦值給 processed_data，消除「Object not found」風險
+  raw_df <- read.csv(data_file, stringsAsFactors = FALSE)
+  
+  # 數據預處理：將原始欄位轉化為決策指標 (如：勝率與利潤)
+  processed_data <- raw_df %>%
+    rename(
+      purchase_amount_usd = Purchase.Amount..USD.,
+      location = Location,
+      category = Category
+    ) %>%
+    mutate(
+      estimated_profit = purchase_amount_usd * 0.15 # 假設 15% 獲利確定性
+    )
+} else {
+  # ISO 42001 問責制：若數據遺失，提供備援虛擬數據，防止系統白屏
+  processed_data <- data.frame(
+    location = "System Warning",
+    purchase_amount_usd = 0,
+    category = "Missing Data",
+    estimated_profit = 0
+  )
+}
+
+# --- 3. 戰略公式備註 (LaTeX) ---
+# 我們是以客戶終身價值為核心進行監控：
+# $$LTV = \frac{Average\ Order\ Value \times Purchase\ Frequency}{Churn\ Rate}$$
 
 # --- 1. 全球戰略辭典 (治理、邏輯與警語) ---
 lang_data <- list(
